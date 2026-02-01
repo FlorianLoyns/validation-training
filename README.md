@@ -11,8 +11,8 @@ Zu jeder Situation gibt es mehrere Antwortmöglichkeiten.
 
 Nach deiner Auswahl bekommst du:
 
-- eine **kurze Erklärung**, warum die Antwort eher passt oder eher nicht passt  
-- einen kurzen Hinweis „**Parallel tun**“ (z. B. ruhig stehen bleiben, Abstand lassen, Stimme senken), damit die verbale Reaktion im Alltag wirklich klappt
+- eine kurze Erklärung, warum die Antwort eher passt oder eher nicht passt  
+- einen kurzen Hinweis „Parallel tun“ (z. B. ruhig stehen bleiben, Abstand lassen, Stimme senken), damit die verbale Reaktion im Alltag wirklich klappt
 
 Am Ende siehst du eine Gesamtauswertung mit Punkten/Prozent und kannst alle Fragen mit Erklärungen nochmal nachlesen.
 
@@ -20,8 +20,8 @@ Am Ende siehst du eine Gesamtauswertung mit Punkten/Prozent und kannst alle Frag
 
 1. Öffne die Webseite über den [Link oben](https://FlorianLoyns.github.io/validation-selbsttest/).  
 2. Lies die Situation und wähle die Antwort, die du in dem Moment am ehesten sagen würdest.  
-3. Klicke auf **Weiter** → zuerst erscheint die Erklärung.  
-4. Klicke erneut auf **Weiter** → nächste Frage.  
+3. Klicke auf Weiter → zuerst erscheint die Erklärung.  
+4. Klicke erneut auf Weiter → nächste Frage.  
 5. Am Ende bekommst du die Auswertung und eine Übersicht aller Antworten.
 
 ## Anforderungen
@@ -33,7 +33,7 @@ Am Ende siehst du eine Gesamtauswertung mit Punkten/Prozent und kannst alle Frag
 
 - Erstellt mit HTML, CSS und JavaScript.  
 - Antwortoptionen werden pro Frage zufällig gemischt (Reihenfolge bleibt beim Zurückgehen gleich).  
-- Die Auswertung erfolgt ausschließlich im Browser. Es werden **keine Daten gespeichert** oder übertragen.
+- Die Auswertung erfolgt ausschließlich im Browser. Es werden keine Daten gespeichert oder übertragen.
 
 ## Lizenz
 
