@@ -2,7 +2,7 @@
 
 Dieses Repository enthält einen interaktiven Selbsttest für Pflegefachassistenz-Schüler:innen (PFA), der typische Situationen aus dem Umgang mit Menschen mit Demenz aufgreift. Ziel ist, **Validation alltagstauglich** zu üben: kurze, sagbare Sätze – plus eine passende **Handlungsanweisung**, damit der Transfer in die Praxis gelingt.
 
-**[Hier klicken, um den Validation-Selbsttest direkt online auszuprobieren!](https://FlorianLoyns.github.io/validation-selbsttest/)**
+**[Hier klicken, um den Validation-Selbsttest direkt online auszuprobieren!](https://FlorianLoyns.github.io/validation-training/)**
 
 ## Beschreibung
 
@@ -18,7 +18,7 @@ Am Ende siehst du eine Gesamtauswertung mit Punkten/Prozent und kannst alle Frag
 
 ## Verwendung
 
-1. Öffne die Webseite über den [Link oben](https://FlorianLoyns.github.io/validation-selbsttest/).  
+1. Öffne die Webseite über den [Link oben](https://FlorianLoyns.github.io/validation-training/).  
 2. Lies die Situation und wähle die Antwort, die du in dem Moment am ehesten sagen würdest.  
 3. Klicke auf Weiter → zuerst erscheint die Erklärung.  
 4. Klicke erneut auf Weiter → nächste Frage.  
