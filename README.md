@@ -1,4 +1,4 @@
-# Validation-Selbsttest – Sicher reagieren im Pflegealltag
+# Validation-Training
 
 Dieses Repository enthält einen interaktiven Selbsttest für Pflegefachassistenz-Schüler:innen (PFA), der typische Situationen aus dem Umgang mit Menschen mit Demenz aufgreift. Ziel ist, **Validation alltagstauglich** zu üben: kurze, sagbare Sätze – plus eine passende **Handlungsanweisung**, damit der Transfer in die Praxis gelingt.
 
