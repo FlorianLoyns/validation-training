@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="description" content="Validation im Pflegealltag. Kurze Szenarien, einfache Formulierungen, Handlungsanweisungen, sofortige Auswertung – alles lokal im Browser.">
+  <meta name="description" content="Validation im Pflegealltag. Kurze Szenarien, einfache Formulierungen, Handlungsanweisungen, sofortige Auswertung – lokal im Browser.">
   <meta name="robots" content="index,follow">
 
   <title>Validation-Training – sicher reagieren im Pflegealltag</title>
@@ -31,7 +31,7 @@
     .card{
       border:1px solid var(--border); border-radius:10px; padding:16px; background:var(--muted);
     }
-    .situation{ font-weight:700; margin:0 0 12px 0; }
+    .situation{ font-weight:700; margin:0 0 12px 0; outline:none; }
 
     .option{
       background:#fff; border:1px solid #ddd; border-radius:10px;
@@ -71,8 +71,6 @@
     .ergebnis{
       display:none; margin-top:24px; padding:16px; border:1px solid var(--border); border-radius:10px; background:#fff;
     }
-    .badges{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .badge{ border:1px solid #ddd; border-radius:999px; padding:6px 10px; font-size:12px; background:#fafafa; }
 
     details{ margin-top:12px; }
     summary{ cursor:pointer; font-weight:700; }
@@ -82,9 +80,7 @@
     }
     .review-item .qtitle{ font-weight:800; margin-bottom:6px; }
 
-    /* =========================
-       QR Floating Button + Modal
-       ========================= */
+    /* QR FAB + Modal (wie dein Original) */
     .qr-fab{
       position: fixed; top: 20px; right: 20px;
       background: #111; color:#fff;
@@ -109,7 +105,7 @@
       display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
     }
     .qr-modal h3{ margin:0; font-size:18px; }
-    .qr-close{ background:transparent; border:none; font-size:20px; cursor:pointer; }
+    .qr-close{ background:transparent; border:none; font-size:20px; cursor:pointer; color:#000; }
     .qr-canvas-wrap{
       display:flex; justify-content:center; align-items:center; padding:10px; background:#fff;
       border:1px solid #eee; border-radius:12px; margin:8px 0 6px;
@@ -119,24 +115,21 @@
       body{ padding:12px; }
       button{ width:100%; }
       .controls{ gap:8px; }
-      /* QR-Button auf kleinen Screens ausblenden */
       .qr-fab{ display:none; }
     }
   </style>
 </head>
 <body>
 
-<!-- Floating QR-Button (wird auf Handy ausgeblendet) -->
-<button class="qr-fab" id="qrFab" aria-haspopup="dialog" aria-controls="qrDialog" title="QR-Code öffnen">
-  <span class="dot" aria-hidden="true"></span> QR öffnen
+<button class="qr-fab" id="qrFab" aria-haspopup="dialog" aria-controls="qrDialog" title="QR-Code oeffnen">
+  <span class="dot" aria-hidden="true"></span> QR oeffnen
 </button>
 
-<!-- QR-Modal -->
 <div class="qr-modal-backdrop" id="qrBackdrop" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
   <div class="qr-modal" id="qrDialog">
     <header>
-      <h3 id="qrTitle">Seite schnell öffnen</h3>
-      <button class="qr-close" id="qrClose" aria-label="Schließen">×</button>
+      <h3 id="qrTitle">Seite schnell oeffnen</h3>
+      <button class="qr-close" id="qrClose" aria-label="Schliessen">×</button>
     </header>
     <div class="qr-canvas-wrap">
       <div id="qrCanvas" aria-label="QR-Code dieser Seite"></div>
@@ -146,339 +139,371 @@
 
 <h1>Selbsttest: Validation im Pflegealltag</h1>
 <p class="muted small">
-  Wähle die Antwort, die am besten passt. Danach siehst du eine kurze Erklärung plus „Parallel tun“.
-  <br><em>Hinweis: Alles läuft nur im Browser. Es werden keine Daten gespeichert.</em>
+  Waehle die Antwort, die am besten passt. Danach siehst du eine kurze Erklaerung.
+  <br><em>Hinweis: Auswertung laeuft lokal im Browser. Es werden keine Eingaben gespeichert.</em>
 </p>
 
 <div class="progress" id="progress">Frage 1 von 12</div>
 
 <div class="card" id="frageCard">
-  <div class="situation" id="situationText"></div>
+  <div class="situation" id="situationText" tabindex="-1"></div>
   <form id="formAntworten" aria-labelledby="situationText"></form>
 
   <div class="explain" id="explainBox" aria-live="polite">
     <div class="tag" id="explainTag"></div>
-    <h3>Kurz erklärt</h3>
+    <h3>Warum?</h3>
     <div id="explainText"></div>
   </div>
 </div>
 
 <div class="controls">
-  <button class="secondary" id="btnZurueck" type="button">Zurück</button>
-  <button id="btnWeiter" type="button">Weiter</button>
-  <button id="btnAuswerten" type="button" style="display:none;">Auswerten</button>
+  <button class="secondary" id="btnZurueck" type="button">Zurueck</button>
+  <button id="btnWeiter" type="button">Erklaerung anzeigen</button>
+  <button id="btnAuswerten" type="button" style="display:none;">Erklaerung anzeigen</button>
 </div>
 
 <div class="ergebnis" id="ergebnisBox"></div>
 
-<!-- QR Bibliothek via CDN -->
+<!-- QR-Library wieder drin (wie vorher) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-/* =========================
-   Hilfsfunktionen
-   ========================= */
 function shuffle(array){
-  for(let i=array.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [array[i],array[j]] = [array[j],array[i]];
+  for(var i=array.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
   }
   return array;
 }
 
-/* =========================
-   Fragen (PFA-tauglich)
-   ========================= */
-const fragen = [
+var fragen = [
   {
-    situation: "Frau S. steht an der Tür: „Ich muss nach Hause, meine Kinder warten!“",
-    handlung: "Ruhig daneben stehen, auf Augenhöhe gehen, Abstand lassen. Ruhige Stimme. Nicht festhalten – eher begleiten.",
+    situation: "Frau S. steht an der Tuer: 'Ich muss nach Hause, meine Kinder warten!'",
+    handlung: "Ruhig daneben stehen. Auf Augenhoehe gehen. Nicht festhalten - lieber begleiten.",
     optionen: [
-      { text:"„Ihre Kinder sind längst erwachsen. Sie wohnen doch hier.“", score:0,
-        feedback:"Du korrigierst. Das macht oft mehr Stress, weil das Gefühl nicht gesehen wird." },
-      { text:"„Sie müssen nicht nach Hause. Setzen Sie sich jetzt hin.“", score:0,
-        feedback:"Befehl ohne Verstehen. Unruhe wird eher stärker." },
-      { text:"„Sie wollen nach Hause. Das macht Sie gerade unruhig. Ich bleibe kurz bei Ihnen.“", score:2,
-        feedback:"Du spiegelst kurz und gibst Sicherheit. Kein Streit, erst beruhigen." },
-      { text:"„Wenn Sie weiter aufstehen, stürzen Sie.“", score:0,
-        feedback:"Sicherheit ist wichtig – aber als erstes braucht sie Beruhigung und Kontakt." }
+      { text: "'Ihre Kinder sind laengst erwachsen. Sie wohnen doch hier.'", score: 0,
+        feedback: "Das korrigiert sie. Das hilft nicht - ihr Gefuehl wird nicht gesehen." },
+      { text: "'Sie muessen nicht nach Hause. Setzen Sie sich jetzt hin.'", score: 0,
+        feedback: "Ein Befehl ohne Verstaendnis. Die Unruhe wird oft staerker." },
+      { text: "'Sie wollen nach Hause. Das macht Sie gerade unruhig. Ich bleibe kurz bei Ihnen.'", score: 2,
+        feedback: "Gut! Du sagst, was sie fuehlt. Du gibst Sicherheit. Kein Streit." },
+      { text: "'Wenn Sie weiter aufstehen, stuerzen Sie.'", score: 0,
+        feedback: "Warnung ohne Kontakt. Sie braucht erst Beruhigung." }
     ],
     merksatz: "Erst beruhigen, dann lenken."
   },
-
   {
-    situation: "Herr B. sagt: „Da war eben ein Mann im Zimmer!“",
-    handlung: "Nicht lachen, nicht wegwischen. Ruhig bleiben, Blickkontakt anbieten. Licht an / Tür offen, wenn das beruhigt.",
+    situation: "Herr B. sagt: 'Da war eben ein Mann im Zimmer!'",
+    handlung: "Nicht lachen. Ruhig bleiben. Licht anmachen, wenn das beruhigt.",
     optionen: [
-      { text:"„Da war niemand. Sie bilden sich das ein.“", score:0,
-        feedback:"Abwertung/Realitätsstreit. Angst steigt oft." },
-      { text:"„Ich rufe sofort die Polizei!“", score:0,
-        feedback:"Kann Angst verstärken. Erst beruhigen, dann prüfen." },
-      { text:"„Das hat Sie erschreckt. Ich bleibe kurz bei Ihnen. Wir schauen zusammen.“", score:2,
-        feedback:"Du nimmst Angst ernst und gibst Sicherheit." },
-      { text:"„Sie müssen einfach schlafen.“", score:0,
-        feedback:"Wegschieben. Der Mensch bleibt unsicher." }
+      { text: "'Da war niemand. Sie bilden sich das ein.'", score: 0,
+        feedback: "Das wertet ab. Die Angst wird oft groesser." },
+      { text: "'Ich rufe sofort die Polizei!'", score: 0,
+        feedback: "Kann die Angst noch schlimmer machen." },
+      { text: "'Das hat Sie erschreckt. Ich bleibe kurz bei Ihnen. Wir schauen zusammen.'", score: 2,
+        feedback: "Gut! Du nimmst die Angst ernst. Du bist da." },
+      { text: "'Sie muessen einfach schlafen.'", score: 0,
+        feedback: "Das schiebt weg. Er bleibt unsicher." }
     ],
-    merksatz: "Sicherheit schlägt Diskussion."
+    merksatz: "Sicherheit geben ist wichtiger als Recht haben."
   },
-
   {
-    situation: "Herr P. hält seine Geldbörse fest: „Die wollen mir was wegnehmen!“",
-    handlung: "Hände sichtbar, nicht nach der Börse greifen. Ruhig sprechen, kurze Sätze. Wahlmöglichkeiten anbieten.",
+    situation: "Herr P. haelt seine Geldboerse fest: 'Die wollen mir was wegnehmen!'",
+    handlung: "Haende zeigen. Nicht nach der Boerse greifen. Ruhig sprechen.",
     optionen: [
-      { text:"„Sie wollen sicher sein, dass alles da ist. Wollen wir zusammen nachsehen?“", score:2,
-        feedback:"Top: Bedürfnis (Sicherheit) trifft. Du bietest Hilfe an." },
-      { text:"„Wir können kurz prüfen: Geldbörse, Schlüssel, Handy. Sie sagen Stopp, wenn’s passt.“", score:1,
-        feedback:"Gut: gibt Kontrolle zurück. Noch besser: kurz Gefühl benennen („macht Sie unruhig“)." },
-      { text:"„Niemand nimmt Ihnen was weg. Beruhigen Sie sich.“", score:0,
-        feedback:"Klingt logisch, fühlt sich aber wie Wegwischen an." },
-      { text:"„Das ist Unsinn.“", score:0,
-        feedback:"Abwertung. Misstrauen wird oft stärker." }
+      { text: "'Sie wollen sicher sein, dass alles da ist. Wollen wir zusammen nachsehen?'", score: 2,
+        feedback: "Sehr gut! Du verstehst sein Beduerfnis (Sicherheit). Du bietest Hilfe an." },
+      { text: "'Wir koennen kurz pruefen: Geldboerse, Schluessel, Handy. Sie sagen Stopp, wenn es passt.'", score: 1,
+        feedback: "Okay! Du gibst ihm Kontrolle." },
+      { text: "'Niemand nimmt Ihnen was weg. Beruhigen Sie sich.'", score: 0,
+        feedback: "Das wischt sein Gefuehl weg. Hilft nicht." },
+      { text: "'Das ist Unsinn.'", score: 0,
+        feedback: "Das wertet ab. Das Misstrauen wird oft staerker." }
     ],
-    merksatz: "Choice beruhigt."
+    merksatz: "Auswahl geben beruhigt."
   },
-
   {
-    situation: "Frau M. weint: „Wo ist meine Mutter? Die muss mich abholen.“",
-    handlung: "Hinsetzen/Hocke, auf Augenhöhe. Taschentuch anbieten. Ruhige Stimme. Nicht korrigieren.",
+    situation: "Frau M. weint: 'Wo ist meine Mutter? Die muss mich abholen.'",
+    handlung: "Hinsetzen oder in die Hocke gehen. Taschentuch anbieten. Nicht korrigieren.",
     optionen: [
-      { text:"„Sie vermissen Ihre Mutter. Das ist gerade traurig. Ich bin kurz bei Ihnen.“", score:2,
-        feedback:"Top: Gefühl trifft + Kontakt. Das beruhigt meist schnell." },
-      { text:"„Wollen wir zusammen einen Tee trinken und kurz warten?“", score:1,
-        feedback:"Okay: beruhigt und gibt Struktur. Noch besser: erst Gefühl benennen." },
-      { text:"„Ihre Mutter lebt nicht mehr.“", score:0,
-        feedback:"Kann wie eine neue harte Nachricht wirken und Trauer verstärken." },
-      { text:"„Jetzt hören Sie auf zu weinen.“", score:0,
-        feedback:"Abwertung. Beziehung leidet, Stress steigt." }
+      { text: "'Sie vermissen Ihre Mutter. Das ist gerade traurig. Ich bin kurz bei Ihnen.'", score: 2,
+        feedback: "Sehr gut! Du sagst das Gefuehl. Du bist da. Das beruhigt." },
+      { text: "'Wollen wir zusammen einen Tee trinken und kurz warten?'", score: 1,
+        feedback: "Okay! Das beruhigt." },
+      { text: "'Ihre Mutter lebt nicht mehr.'", score: 0,
+        feedback: "Das kann wie eine neue schlimme Nachricht wirken." },
+      { text: "'Jetzt hoeren Sie auf zu weinen.'", score: 0,
+        feedback: "Das wertet ab. Die Beziehung leidet." }
     ],
-    merksatz: "Erst begleiten, dann lenken."
+    merksatz: "Erst begleiten, dann ablenken."
   },
-
   {
-    situation: "Frau L. fragt zum fünften Mal: „Wann gibt’s denn endlich Mittagessen?“",
-    handlung: "Ruhig bleiben. Nicht „genervt“ zeigen. Visuellen Hinweis nutzen (Uhr/Plan/Zettel).",
+    situation: "Frau L. fragt zum fuenften Mal: 'Wann gibt es denn endlich Mittagessen?'",
+    handlung: "Ruhig bleiben. Nicht genervt zeigen. Einen Zettel oder die Uhr zeigen.",
     optionen: [
-      { text:"„Das habe ich Ihnen doch gerade schon gesagt!“", score:0,
-        feedback:"Klingt genervt. Das macht Scham – und dann wird’s oft schlimmer." },
-      { text:"„Sie fragen ständig das Gleiche. Das nervt.“", score:0,
-        feedback:"Beziehungsschaden. Unruhe nimmt zu." },
-      { text:"„Sie haben Hunger und warten. Es gibt um 12 Uhr. Ich zeig’s kurz am Plan.“", score:2,
-        feedback:"Gefühl + klare Orientierung. Du stützt statt zu tadeln." },
-      { text:"„Keine Ahnung, ich hab keine Zeit.“", score:0,
-        feedback:"Unsicherheit steigt. Frage kommt dann oft wieder." }
+      { text: "'Das habe ich Ihnen doch gerade schon gesagt!'", score: 0,
+        feedback: "Klingt genervt. Das macht Scham - und dann fragt sie oft noch mehr." },
+      { text: "'Sie fragen staendig das Gleiche. Das nervt.'", score: 0,
+        feedback: "Das verletzt. Die Unruhe wird groesser." },
+      { text: "'Sie haben Hunger und warten. Es gibt um 12 Uhr. Ich zeige es kurz am Plan.'", score: 2,
+        feedback: "Gut! Du sagst das Gefuehl. Du zeigst etwas zum Festhalten." },
+      { text: "'Keine Ahnung, ich habe keine Zeit.'", score: 0,
+        feedback: "Sie bleibt unsicher. Die Frage kommt wieder." }
     ],
-    merksatz: "Wiederholung ist Symptom."
+    merksatz: "Wiederholung zeigt: Sie braucht Halt."
   },
-
   {
-    situation: "Frau R. ruft: „Meine Handtasche ist weg! Jemand hat sie geklaut!“",
-    handlung: "Stimme runter, nicht diskutieren. Erst beruhigen. Dann gemeinsam suchen – Schritt für Schritt, langsam.",
+    situation: "Frau R. ruft: 'Meine Handtasche ist weg! Jemand hat sie geklaut!'",
+    handlung: "Stimme runter. Nicht streiten. Erst beruhigen. Dann zusammen suchen.",
     optionen: [
-      { text:"„Sie sind ganz aufgeregt. Die Tasche ist wichtig. Wir suchen zusammen.“", score:2,
-        feedback:"Top: Gefühl + Bedeutung + Hilfe. Das bringt Ruhe." },
-      { text:"„Wo war die Tasche zuletzt? Wir suchen jetzt.“", score:1,
-        feedback:"Okay lösungsorientiert. Noch besser: ein Satz zum Gefühl davor." },
-      { text:"„Sie verlegen die dauernd. Das ist nichts Neues.“", score:0,
-        feedback:"Beschämt. Das macht’s meist schlimmer." },
-      { text:"„Wenn Sie weiter so schreien, muss ich Sie beruhigen.“", score:0,
-        feedback:"Drohung. Eskalationsrisiko." }
+      { text: "'Sie sind ganz aufgeregt. Die Tasche ist wichtig. Wir suchen zusammen.'", score: 2,
+        feedback: "Sehr gut! Du sagst das Gefuehl. Du hilfst. Das bringt Ruhe." },
+      { text: "'Wo war die Tasche zuletzt? Wir suchen jetzt.'", score: 1,
+        feedback: "Okay, du hilfst." },
+      { text: "'Sie verlegen die dauernd. Das ist nichts Neues.'", score: 0,
+        feedback: "Das beschaemt. Das macht es schlimmer." },
+      { text: "'Wenn Sie weiter so schreien, muss ich Sie beruhigen.'", score: 0,
+        feedback: "Das droht. Das kann eskalieren." }
     ],
-    merksatz: "Ruhig → gemeinsam → Schritt für Schritt."
+    merksatz: "Ruhig bleiben, zusammen suchen, Schritt fuer Schritt."
   },
-
   {
-    situation: "Herr G. sagt: „Ich bin hier falsch. Ich muss in mein Zimmer!“ (Er ist bereits dort.)",
-    handlung: "Nicht korrigieren. Ruhig bleiben. Einen Anker anbieten (Foto, Lieblingsdecke, Namensschild).",
+    situation: "Herr G. sagt: 'Ich bin hier falsch. Ich muss in mein Zimmer!' (Er ist bereits dort.)",
+    handlung: "Nicht korrigieren. Einen Anker zeigen (Foto, Lieblingsdecke, Namensschild).",
     optionen: [
-      { text:"„Sie sind doch in Ihrem Zimmer! Sehen Sie das nicht?“", score:0,
-        feedback:"Korrigiert. Macht oft mehr Verwirrung/Ärger." },
-      { text:"„Okay, dann gehen wir halt.“", score:0,
-        feedback:"Kann Unruhe verstärken. Erst Bedarf klären." },
-      { text:"„Hier fühlt es sich gerade nicht richtig an. Was fehlt Ihnen, damit es passt?“", score:2,
-        feedback:"Du nimmst das Gefühl ernst und suchst einen Anker." },
-      { text:"„Sie müssen jetzt bleiben.“", score:0,
-        feedback:"Zwangsignal. Beziehung leidet." }
+      { text: "'Sie sind doch in Ihrem Zimmer! Sehen Sie das nicht?'", score: 0,
+        feedback: "Das korrigiert. Das macht oft Verwirrung oder Aerger." },
+      { text: "'Okay, dann gehen wir halt.'", score: 0,
+        feedback: "Das kann die Unruhe groesser machen." },
+      { text: "'Hier fuehlt es sich gerade nicht richtig an. Was fehlt Ihnen, damit es passt?'", score: 2,
+        feedback: "Gut! Du nimmst das Gefuehl ernst. Du suchst einen Anker." },
+      { text: "'Sie muessen jetzt bleiben.'", score: 0,
+        feedback: "Das zwingt. Die Beziehung leidet." }
     ],
-    merksatz: "Nicht streiten – ankommen lassen."
+    merksatz: "Nicht streiten - ankommen lassen."
   },
-
   {
-    situation: "Frau H. schiebt den Teller weg: „Das Essen ist vergiftet!“",
-    handlung: "Ruhig bleiben, nicht lachen. Choice geben (Tee/Joghurt/neu servieren). Kleine Schritte.",
+    situation: "Frau H. schiebt den Teller weg: 'Das Essen ist vergiftet!'",
+    handlung: "Ruhig bleiben. Nicht lachen. Auswahl geben (Tee, Joghurt, anderes Essen).",
     optionen: [
-      { text:"„Das macht Ihnen Angst. Sie wollen sicher sein. Wollen wir was anderes holen?“", score:2,
-        feedback:"Top: Gefühl + Bedürfnis + Lösung in kleinen Schritten." },
-      { text:"„Wollen Sie erst einen Tee? Oder wir holen etwas, das Sie selbst auswählen?“", score:1,
-        feedback:"Gut: Choice. Noch besser: vorher kurz Gefühl benennen." },
-      { text:"„Das stimmt nicht. Essen Sie jetzt.“", score:0,
-        feedback:"Druck + Realitätsstreit. Verweigerung wird oft stärker." },
-      { text:"„Dann essen Sie halt nichts.“", score:0,
-        feedback:"Lässt Angst offen. Kann problematisch werden." }
+      { text: "'Das macht Ihnen Angst. Sie wollen sicher sein. Wollen wir was anderes holen?'", score: 2,
+        feedback: "Sehr gut! Du sagst das Gefuehl. Du gibst Auswahl." },
+      { text: "'Wollen Sie erst einen Tee? Oder wir holen etwas, das Sie selbst auswaehlen?'", score: 1,
+        feedback: "Okay! Du gibst Auswahl." },
+      { text: "'Das stimmt nicht. Essen Sie jetzt.'", score: 0,
+        feedback: "Das drueckt. Die Verweigerung wird oft staerker." },
+      { text: "'Dann essen Sie halt nichts.'", score: 0,
+        feedback: "Das laesst die Angst offen. Kann gefaehrlich werden." }
     ],
-    merksatz: "Klein anfangen, nicht drücken."
+    merksatz: "Klein anfangen. Nicht druecken."
   },
-
   {
-    situation: "Herr T. sagt: „Ich muss gleich zur Schule, sonst gibt’s Ärger.“",
-    handlung: "Ruhige Stimme. Nicht korrigieren. Umleiten über „vorbereiten / prüfen / warten“.",
+    situation: "Herr T. sagt: 'Ich muss gleich zur Schule, sonst gibt es Aerger.'",
+    handlung: "Ruhig bleiben. Nicht korrigieren. Umlenken: 'Wir machen uns bereit.'",
     optionen: [
-      { text:"„Sie gehen doch nicht mehr zur Schule.“", score:0,
-        feedback:"Korrigiert. Kann beschämen oder provozieren." },
-      { text:"„Okay, dann los!“", score:0,
-        feedback:"Ungefiltert mitgehen kann riskant sein." },
-      { text:"„Sie wollen keinen Ärger. Okay. Wir machen uns kurz bereit und schauen, ob alles stimmt.“", score:2,
-        feedback:"Gefühl/Bedeutung + strukturierender Umleiter. Sehr praktikabel." },
-      { text:"„Setzen Sie sich. Punkt.“", score:0,
-        feedback:"Zwangsignal. Widerstand steigt." }
+      { text: "'Sie gehen doch nicht mehr zur Schule.'", score: 0,
+        feedback: "Das korrigiert. Das kann beschaemen." },
+      { text: "'Okay, dann los!'", score: 0,
+        feedback: "Einfach mitmachen kann riskant sein." },
+      { text: "'Sie wollen keinen Aerger. Okay. Wir machen uns kurz bereit und schauen, ob alles stimmt.'", score: 2,
+        feedback: "Gut! Du verstehst sein Gefuehl. Du lenkst um mit 'vorbereiten'." },
+      { text: "'Setzen Sie sich. Punkt.'", score: 0,
+        feedback: "Das zwingt. Der Widerstand wird groesser." }
     ],
-    merksatz: "„Vorbereiten“ ist ein guter Umleiter."
+    merksatz: "'Vorbereiten' ist ein guter Umlenker."
   },
-
   {
-    situation: "Frau E. sagt leise: „Alle lassen mich allein.“",
-    handlung: "Hinsetzen, ruhige Nähe. Kurzer Kontakt (Hand anbieten, wenn passend). Nicht sofort „aktivieren“.",
+    situation: "Frau E. sagt leise: 'Alle lassen mich allein.'",
+    handlung: "Hinsetzen. Ruhig in der Naehe bleiben. Hand anbieten, wenn passend.",
     optionen: [
-      { text:"„Das fühlt sich einsam an. Ich setze mich kurz zu Ihnen.“", score:2,
-        feedback:"Top: Gefühl + Kontakt." },
-      { text:"„Ach was, wir sind doch da.“", score:1,
-        feedback:"Okay gemeint – kann aber wie Wegwischen wirken." },
-      { text:"„Das stimmt nicht. Gestern war doch Besuch.“", score:0,
-        feedback:"Fakten helfen hier kaum. Gefühl bleibt." },
-      { text:"„Dann gehen Sie halt raus unter Leute.“", score:0,
-        feedback:"Ratschlag ohne Beziehung. Meist nicht hilfreich." }
+      { text: "'Das fuehlt sich einsam an. Ich setze mich kurz zu Ihnen.'", score: 2,
+        feedback: "Sehr gut! Du sagst das Gefuehl. Du bist da." },
+      { text: "'Ach was, wir sind doch da.'", score: 1,
+        feedback: "Gut gemeint - aber das kann wie Wegwischen wirken." },
+      { text: "'Das stimmt nicht. Gestern war doch Besuch.'", score: 0,
+        feedback: "Fakten helfen hier nicht. Das Gefuehl bleibt." },
+      { text: "'Dann gehen Sie halt raus unter Leute.'", score: 0,
+        feedback: "Ein Ratschlag ohne Kontakt. Hilft meistens nicht." }
     ],
     merksatz: "Erst Beziehung, dann Aktion."
   },
-
   {
-    situation: "Spätnachmittag: Frau J. läuft hin und her: „Hier stimmt was nicht… irgendwas ist falsch!“",
-    handlung: "Reize senken (leiser, weniger Leute). Ruhig begleiten. Ruhigen Platz anbieten. Setzen/atmen.",
+    situation: "Spaetnachmittag: Frau J. laeuft hin und her: 'Hier stimmt was nicht... irgendwas ist falsch!'",
+    handlung: "Leiser machen (Radio aus, weniger Leute). Ruhig begleiten. Ruhigen Platz anbieten.",
     optionen: [
-      { text:"„Nein, alles ist normal. Setzen Sie sich.“", score:0,
-        feedback:"Wegwischen + Befehl. Unruhe bleibt." },
-      { text:"„Was ist denn falsch? Sagen Sie es endlich!“", score:0,
-        feedback:"Druck. Kann überfordern." },
-      { text:"„Sie wirken angespannt. Komm, wir gehen kurz an einen ruhigen Platz.“", score:2,
-        feedback:"Gefühl + einfache Handlung. Das bringt Regulation." },
-      { text:"„Wenn Sie nicht aufhören, rufe ich jemanden.“", score:0,
-        feedback:"Drohung. Eskalationsrisiko." }
+      { text: "'Nein, alles ist normal. Setzen Sie sich.'", score: 0,
+        feedback: "Das wischt weg und befiehlt. Die Unruhe bleibt." },
+      { text: "'Was ist denn falsch? Sagen Sie es endlich!'", score: 0,
+        feedback: "Das drueckt. Das kann ueberfordern." },
+      { text: "'Sie wirken angespannt. Kommen Sie, wir gehen kurz an einen ruhigen Platz.'", score: 2,
+        feedback: "Gut! Du sagst das Gefuehl. Du machst etwas Einfaches." },
+      { text: "'Wenn Sie nicht aufhoeren, rufe ich jemanden.'", score: 0,
+        feedback: "Das droht. Das kann eskalieren." }
     ],
-    merksatz: "Ruhig machen, dann weiter."
+    merksatz: "Erst ruhig machen, dann weiter."
   },
-
   {
-    situation: "Frau K. sagt: „Die Jacke ist nicht meine. Die haben die vertauscht.“",
-    handlung: "Nicht diskutieren. Gemeinsam kurz prüfen (Etikett/Name). Wenn’s nicht klappt: beruhigen & ankern (eigene Jacke zeigen).",
+    situation: "Frau K. sagt: 'Die Jacke ist nicht meine. Die haben die vertauscht.'",
+    handlung: "Nicht streiten. Zusammen kurz pruefen (Etikett, Name). Wenn es nicht klappt: beruhigen.",
     optionen: [
-      { text:"„Das fühlt sich falsch an. Wollen wir kurz zusammen schauen, welche Ihre ist?“", score:2,
-        feedback:"Top: Gefühl + gemeinsames Prüfen." },
-      { text:"„Hier steht Ihr Name. Das ist Ihre Jacke.“", score:1,
-        feedback:"Okay, wenn ruhig gesagt. Manchmal reicht’s – manchmal nicht." },
-      { text:"„Das ist doch Quatsch. Sie sehen doch, dass das Ihre ist.“", score:0,
-        feedback:"Abwertung. Macht’s häufig schlimmer." },
-      { text:"„Sie machen immer Theater.“", score:0,
-        feedback:"Beziehungsschaden. Unruhe steigt." }
+      { text: "'Das fuehlt sich falsch an. Wollen wir kurz zusammen schauen, welche Ihre ist?'", score: 2,
+        feedback: "Sehr gut! Du sagst das Gefuehl. Ihr prueft zusammen." },
+      { text: "'Hier steht Ihr Name. Das ist Ihre Jacke.'", score: 1,
+        feedback: "Okay, wenn ruhig gesagt. Manchmal reicht es - manchmal nicht." },
+      { text: "'Das ist doch Quatsch. Sie sehen doch, dass das Ihre ist.'", score: 0,
+        feedback: "Das wertet ab. Das macht es oft schlimmer." },
+      { text: "'Sie machen immer Theater.'", score: 0,
+        feedback: "Das verletzt die Beziehung. Die Unruhe wird groesser." }
     ],
-    merksatz: "Kurz prüfen – wenn nicht, beruhigen & ankern."
+    merksatz: "Kurz pruefen - wenn nicht, beruhigen."
   }
 ];
 
-/* =========================
-   Zustand
-   ========================= */
-let index = 0;
-fragen.forEach(f => f._shuffled = null);
+var index = 0;
+var selections = [];
+var explanationShown = [];
+var maxScore = 0;
 
-const selections = new Array(fragen.length).fill(null); // index in gemischter Liste
-const explanationShown = new Array(fragen.length).fill(false);
+for (var i = 0; i < fragen.length; i++) {
+  selections.push(null);
+  explanationShown.push(false);
 
-let maxScore = fragen.reduce((acc, f) => acc + Math.max(...f.optionen.map(o=>o.score)), 0);
-
-/* =========================
-   DOM
-   ========================= */
-const progressEl   = document.getElementById("progress");
-const cardEl       = document.getElementById("frageCard");
-const formEl       = document.getElementById("formAntworten");
-const situationEl  = document.getElementById("situationText");
-
-const explainBox   = document.getElementById("explainBox");
-const explainTag   = document.getElementById("explainTag");
-const explainText  = document.getElementById("explainText");
-
-const btnBack      = document.getElementById("btnZurueck");
-const btnNext      = document.getElementById("btnWeiter");
-const btnFinish    = document.getElementById("btnAuswerten");
-const resultEl     = document.getElementById("ergebnisBox");
-
-function currentSelectedIndex(){
-  const checked = formEl.querySelector('input[type="radio"]:checked');
-  if(!checked) return null;
-  return parseInt(checked.value,10);
+  var maxInQuestion = 0;
+  for (var j = 0; j < fragen[i].optionen.length; j++) {
+    if (fragen[i].optionen[j].score > maxInQuestion) {
+      maxInQuestion = fragen[i].optionen[j].score;
+    }
+  }
+  maxScore += maxInQuestion;
 }
-function setExplainVisible(visible){
+
+var progressEl = document.getElementById("progress");
+var cardEl = document.getElementById("frageCard");
+var formEl = document.getElementById("formAntworten");
+var situationEl = document.getElementById("situationText");
+var explainBox = document.getElementById("explainBox");
+var explainTag = document.getElementById("explainTag");
+var explainText = document.getElementById("explainText");
+var btnBack = document.getElementById("btnZurueck");
+var btnNext = document.getElementById("btnWeiter");
+var btnFinish = document.getElementById("btnAuswerten");
+var resultEl = document.getElementById("ergebnisBox");
+
+function currentSelectedIndex() {
+  var checked = formEl.querySelector('input[type="radio"]:checked');
+  if (!checked) return null;
+  return parseInt(checked.value, 10);
+}
+
+function setExplainVisible(visible) {
   explainBox.style.display = visible ? "block" : "none";
 }
-function lockOptions(locked){
-  const inputs = formEl.querySelectorAll('input[type="radio"]');
-  inputs.forEach(i => i.disabled = locked);
+
+function lockOptions(locked) {
+  var inputs = formEl.querySelectorAll('input[type="radio"]');
+  for (var i = 0; i < inputs.length; i++) inputs[i].disabled = locked;
 }
-function tagForScore(score){
-  if(score >= 2) return { cls:"ok", text:"Sehr passend" };
-  if(score === 1) return { cls:"meh", text:"Okay" };
-  return { cls:"bad", text:"Nicht passend" };
+
+function tagForScore(score) {
+  if (score >= 2) return { cls: "ok", text: "Gut!" };
+  if (score === 1) return { cls: "meh", text: "Geht so" };
+  return { cls: "bad", text: "Nicht gut" };
 }
-function showExplanationForChoice(frage, chosenOpt){
-  const t = tagForScore(chosenOpt.score);
-  explainTag.className = `tag ${t.cls}`;
+
+function ensureMehHint(feedbackText) {
+  if (!feedbackText) return "";
+  if (/noch besser/i.test(feedbackText)) return feedbackText;
+  return feedbackText + " Noch besser: erst kurz das Gefuehl benennen (z.B. 'Das macht Ihnen Angst / Sie wollen sicher sein.'), dann erst die Loesung.";
+}
+
+function showExplanationForChoice(frage, chosenOpt) {
+  var t = tagForScore(chosenOpt.score);
+  explainTag.className = "tag " + t.cls;
   explainTag.textContent = t.text;
 
-  explainText.innerHTML = `
-    <p style="margin:0;"><strong>Warum?</strong> ${chosenOpt.feedback}</p>
-    <p style="margin:10px 0 0 0;"><strong>Merksatz:</strong> ${frage.merksatz}</p>
-    <p style="margin:10px 0 0 0;"><strong>Parallel tun:</strong> ${frage.handlung}</p>
-  `;
+  explainText.innerHTML = "";
+
+  var fb = chosenOpt.feedback;
+  if (chosenOpt.score === 1) fb = ensureMehHint(fb);
+
+  var p1 = document.createElement("p");
+  p1.style.margin = "0";
+  p1.textContent = fb;
+
+  var p2 = document.createElement("p");
+  p2.style.margin = "10px 0 0 0";
+  p2.innerHTML = "<strong>Merke:</strong> " + frage.merksatz;
+
+  var p3 = document.createElement("p");
+  p3.style.margin = "10px 0 0 0";
+  p3.innerHTML = "<strong>Das kannst du tun:</strong> " + frage.handlung;
+
+  explainText.appendChild(p1);
+  explainText.appendChild(p2);
+  explainText.appendChild(p3);
 }
 
-function render(){
-  progressEl.textContent = `Frage ${index + 1} von ${fragen.length}`;
-  const f = fragen[index];
+function updateButtons() {
+  var isLast = index === fragen.length - 1;
+
+  btnBack.style.display = index === 0 ? "none" : "inline-block";
+  btnNext.style.display = isLast ? "none" : "inline-block";
+  btnFinish.style.display = isLast ? "inline-block" : "none";
+
+  var explained = explanationShown[index];
+  if (!isLast) {
+    btnNext.textContent = explained ? "Naechste Frage" : "Erklaerung anzeigen";
+  } else {
+    btnFinish.textContent = explained ? "Auswerten" : "Erklaerung anzeigen";
+  }
+}
+
+function render() {
+  progressEl.textContent = "Frage " + (index + 1) + " von " + fragen.length;
+  var f = fragen[index];
   situationEl.textContent = f.situation;
 
-  if(!f._shuffled){
-    f._shuffled = shuffle([...f.optionen]);
+  // Fokus auf Situation
+  try { situationEl.focus(); } catch(e){}
+
+  if (!f._shuffled) {
+    var copy = [];
+    for (var i = 0; i < f.optionen.length; i++) copy.push(f.optionen[i]);
+    f._shuffled = shuffle(copy);
   }
-  const options = f._shuffled;
+  var options = f._shuffled;
 
   formEl.innerHTML = "";
   cardEl.classList.remove("unbeantwortet");
 
-  options.forEach((opt, i) => {
-    const id = `opt_${index}_${i}`;
-    const label = document.createElement("label");
+  for (var i = 0; i < options.length; i++) {
+    var opt = options[i];
+    var id = "opt_" + index + "_" + i;
+
+    var label = document.createElement("label");
     label.className = "option";
     label.htmlFor = id;
 
-    const input = document.createElement("input");
+    var input = document.createElement("input");
     input.type = "radio";
-    input.name = `frage_${index}`;
+    input.name = "frage_" + index;
     input.id = id;
     input.value = i;
 
-    if(selections[index] === i){
-      input.checked = true;
-    }
+    if (selections[index] === i) input.checked = true;
 
-    const text = document.createElement("div");
+    var text = document.createElement("div");
     text.textContent = opt.text;
 
     label.appendChild(input);
     label.appendChild(text);
     formEl.appendChild(label);
-  });
+  }
 
-  if(explanationShown[index] && selections[index] !== null){
-    const chosen = f._shuffled[selections[index]];
+  if (explanationShown[index] && selections[index] !== null) {
+    var chosen = f._shuffled[selections[index]];
     showExplanationForChoice(f, chosen);
     setExplainVisible(true);
     lockOptions(true);
@@ -487,157 +512,169 @@ function render(){
     lockOptions(false);
   }
 
-  btnBack.style.display = index === 0 ? "none" : "inline-block";
-  btnNext.style.display = index < fragen.length - 1 ? "inline-block" : "none";
-  btnFinish.style.display = index === fragen.length - 1 ? "inline-block" : "none";
-
-  if(index < fragen.length - 1){
-    btnNext.textContent = (!explanationShown[index] && selections[index] !== null) ? "Weiter (Erklärung)" : "Weiter";
-  } else {
-    btnFinish.textContent = explanationShown[index] ? "Auswerten" : "Auswerten (Erklärung)";
-  }
+  updateButtons();
 }
 
-btnNext.addEventListener("click", () => {
-  const selIdx = currentSelectedIndex();
-  if(selIdx === null && selections[index] === null){
+function requireSelectionOrStored() {
+  var selIdx = currentSelectedIndex();
+  if (selIdx === null && selections[index] === null) {
     cardEl.classList.add("unbeantwortet");
-    return;
+    return null;
   }
   cardEl.classList.remove("unbeantwortet");
+  return selIdx;
+}
 
-  if(!explanationShown[index]){
-    const f = fragen[index];
-    const effectiveIdx = selIdx !== null ? selIdx : selections[index];
-    selections[index] = effectiveIdx;
+function showExplanationStep(selIdxMaybe) {
+  var f = fragen[index];
+  var effectiveIdx = (selIdxMaybe !== null) ? selIdxMaybe : selections[index];
+  selections[index] = effectiveIdx;
 
-    const chosen = f._shuffled[effectiveIdx];
-    showExplanationForChoice(f, chosen);
-    setExplainVisible(true);
-    explanationShown[index] = true;
-    lockOptions(true);
+  var chosen = f._shuffled[effectiveIdx];
+  showExplanationForChoice(f, chosen);
+  setExplainVisible(true);
+  explanationShown[index] = true;
+  lockOptions(true);
+  updateButtons();
+}
 
-    btnNext.textContent = "Weiter";
+btnNext.addEventListener("click", function() {
+  var selIdx = requireSelectionOrStored();
+  if (selIdx === null && selections[index] === null) return;
+
+  if (!explanationShown[index]) {
+    showExplanationStep(selIdx);
     return;
   }
 
-  if(index < fragen.length - 1){
+  if (index < fragen.length - 1) {
     index++;
     render();
   }
 });
 
-btnBack.addEventListener("click", () => {
-  if(index > 0) index--;
+btnBack.addEventListener("click", function() {
+  if (index > 0) index--;
   render();
 });
 
-btnFinish.addEventListener("click", () => {
-  const selIdx = currentSelectedIndex();
-  if(selIdx === null && selections[index] === null){
-    cardEl.classList.add("unbeantwortet");
-    return;
-  }
-  cardEl.classList.remove("unbeantwortet");
+btnFinish.addEventListener("click", function() {
+  var selIdx = requireSelectionOrStored();
+  if (selIdx === null && selections[index] === null) return;
 
-  const f = fragen[index];
-  const effectiveIdx = selIdx !== null ? selIdx : selections[index];
-  selections[index] = effectiveIdx;
-
-  if(!explanationShown[index]){
-    const chosen = f._shuffled[effectiveIdx];
-    showExplanationForChoice(f, chosen);
-    setExplainVisible(true);
-    explanationShown[index] = true;
-    lockOptions(true);
-    btnFinish.textContent = "Auswerten";
+  if (!explanationShown[index]) {
+    showExplanationStep(selIdx);
     return;
   }
 
-  let totalScore = 0;
-  for(let q=0; q<fragen.length; q++){
-    const fr = fragen[q];
-    const picked = fr._shuffled[selections[q]];
+  // Auswertung + Ampel
+  var totalScore = 0;
+  var countOk = 0, countMeh = 0, countBad = 0;
+
+  for (var q = 0; q < fragen.length; q++) {
+    var fr = fragen[q];
+    var picked = fr._shuffled[selections[q]];
     totalScore += picked.score;
-  }
-  const perc = Math.round((totalScore / maxScore) * 100);
 
-  let level = "";
-  let impuls = "";
-  if(perc >= 80){
-    level = "Sehr gut im Alltag nutzbar";
-    impuls = "Du triffst oft Gefühl und gibst Sicherheit. In Stressmomenten: Stimme runter, Satz kurz, dann eine kleine Handlung anbieten.";
-  } else if(perc >= 55){
-    level = "Gute Basis – mit Luft nach oben";
-    impuls = "Du bist häufig nah dran. Tipp: Fast immer zuerst ein Gefühl in einfachen Worten („macht unruhig/traurig/erschrocken“), dann Lösung.";
+    if (picked.score >= 2) countOk++;
+    else if (picked.score === 1) countMeh++;
+    else countBad++;
+  }
+
+  var perc = Math.round((totalScore / maxScore) * 100);
+
+  var headline = "";
+  var level = "";
+  var tipp = "";
+
+  if (perc >= 80) {
+    headline = "Super!";
+    level = "Du machst das richtig gut.";
+    tipp = "Du triffst meistens das Gefuehl und gibst Sicherheit. In stressigen Momenten: Stimme runter, kurzer Satz, dann eine kleine Handlung anbieten.";
+  } else if (perc >= 55) {
+    headline = "Gut!";
+    level = "Gute Basis - da geht noch mehr.";
+    tipp = "Du bist oft nah dran. Sag fast immer zuerst ein Gefuehl in einfachen Worten (Das macht Sie unruhig / traurig / erschrocken). Dann erst die Loesung.";
   } else {
-    level = "Noch Übung nötig";
-    impuls = "Du rutschst noch öfter ins Korrigieren oder Anweisen. Trick: Erst Kontakt + Gefühl. Dann eine kleine, einfache Handlung anbieten.";
+    headline = "Weiter ueben!";
+    level = "Uebung macht den Meister.";
+    tipp = "Du rutschst noch oft ins Korrigieren oder Anweisen. Trick: Erst Kontakt + Gefuehl. Dann eine kleine, einfache Handlung anbieten.";
   }
 
-  let reviewHtml = "";
-  for(let q=0; q<fragen.length; q++){
-    const fr = fragen[q];
-    const picked = fr._shuffled[selections[q]];
-    const t = tagForScore(picked.score);
+  var reviewHtml = "";
+  for (var r = 0; r < fragen.length; r++) {
+    var fr2 = fragen[r];
+    var picked2 = fr2._shuffled[selections[r]];
+    var t = tagForScore(picked2.score);
+    var fb = picked2.score === 1 ? ensureMehHint(picked2.feedback) : picked2.feedback;
 
-    reviewHtml += `
-      <div class="review-item">
-        <div class="qtitle">Frage ${q+1}</div>
-        <div class="small muted">${fr.situation}</div>
-        <div style="margin-top:10px;">
-          <span class="tag ${t.cls}">${t.text}</span>
-          <div style="margin-top:8px;"><strong>Deine Antwort:</strong> ${picked.text}</div>
-          <div style="margin-top:6px;"><strong>Warum?</strong> ${picked.feedback}</div>
-          <div class="small" style="margin-top:8px;"><strong>Merksatz:</strong> ${fr.merksatz}</div>
-          <div class="small" style="margin-top:6px;"><strong>Parallel tun:</strong> ${fr.handlung}</div>
-        </div>
-      </div>
-    `;
+    reviewHtml += "<div class='review-item'>" +
+      "<div class='qtitle'>Frage " + (r + 1) + "</div>" +
+      "<div class='small muted'>" + fr2.situation + "</div>" +
+      "<div style='margin-top:10px;'>" +
+      "<span class='tag " + t.cls + "'>" + t.text + "</span>" +
+      "<div style='margin-top:8px;'><strong>Deine Antwort:</strong> " + picked2.text + "</div>" +
+      "<div style='margin-top:6px;'>" + fb + "</div>" +
+      "<div class='small' style='margin-top:8px;'><strong>Merke:</strong> " + fr2.merksatz + "</div>" +
+      "<div class='small' style='margin-top:6px;'><strong>Das kannst du tun:</strong> " + fr2.handlung + "</div>" +
+      "</div></div>";
   }
 
-  resultEl.innerHTML = `
-    <h2>Dein Ergebnis</h2>
-    <p><strong>Punkte:</strong> ${totalScore} / ${maxScore} (${perc}%)</p>
-    <div class="badges">
-      <span class="badge">Einstufung: ${level}</span>
-      <span class="badge">Merkschema: Gefühl → Sicherheit → kleine Handlung</span>
-      <span class="badge">Vermeiden: Korrigieren, Drohen, Genervt klingen</span>
-    </div>
-    <p style="margin-top:12px;"><strong>Praxis-Impuls:</strong> ${impuls}</p>
+  resultEl.innerHTML =
+    "<h2>" + headline + "</h2>" +
+    "<p><strong>" + level + "</strong></p>" +
+    "<p>" + totalScore + " von " + maxScore + " Punkten (" + perc + "%)</p>" +
 
-    <details>
-      <summary>Antworten & Erklärungen (Nachlesen)</summary>
-      ${reviewHtml}
-    </details>
+    "<div style='background:#fafafa; border:1px solid #ddd; border-radius:10px; padding:14px; margin:16px 0;'>" +
+    "<h3 style='margin:0 0 8px 0; font-size:15px;'>Deine Ampel</h3>" +
+    "<div class='small'>Gut: <strong>" + countOk + "</strong> &nbsp;|&nbsp; Geht so: <strong>" + countMeh + "</strong> &nbsp;|&nbsp; Nicht gut: <strong>" + countBad + "</strong></div>" +
+    "</div>" +
 
-    <div class="controls" style="margin-top:10px;">
-      <button class="secondary" type="button" id="btnNeu">Test neu starten</button>
-    </div>
-  `;
+    "<div style='background:#f0f7ff; border:1px solid #b3d4fc; border-radius:10px; padding:14px; margin:16px 0;'>" +
+    "<h3 style='margin:0 0 8px 0; font-size:15px;'>Dein Tipp</h3>" +
+    "<p style='margin:0; font-size:14px;'>" + tipp + "</p></div>" +
+
+    "<div style='background:#fffef0; border:1px solid #e7d27c; border-radius:10px; padding:14px; margin:16px 0;'>" +
+    "<h3 style='margin:0 0 8px 0; font-size:15px;'>Kurz wichtig: Validation ist nicht Luegen</h3>" +
+    "<p style='margin:0; font-size:14px;'>Du musst nicht zustimmen. Du nimmst das <strong>Gefuehl</strong> ernst (Angst, Trauer, Unruhe) und gibst Sicherheit. Darum geht’s.</p></div>" +
+
+    "<div style='background:#f5fff5; border:1px solid #6bb36b; border-radius:10px; padding:14px; margin:16px 0;'>" +
+    "<h3 style='margin:0 0 8px 0; font-size:15px;'>So geht Validation - 3 Schritte</h3>" +
+    "<p style='margin:4px 0; font-size:14px;'><strong>1.</strong> Gefuehl sagen (Das macht Sie unruhig.)</p>" +
+    "<p style='margin:4px 0; font-size:14px;'><strong>2.</strong> Sicherheit geben (Ich bin da.)</p>" +
+    "<p style='margin:4px 0; font-size:14px;'><strong>3.</strong> Kleine Handlung anbieten (Wir schauen zusammen.)</p></div>" +
+
+    "<div style='background:#fff5f5; border:1px solid #d46a6a; border-radius:10px; padding:14px; margin:16px 0;'>" +
+    "<h3 style='margin:0 0 8px 0; font-size:15px;'>Das lieber nicht</h3>" +
+    "<ul style='margin:0; padding-left:20px; font-size:14px;'>" +
+    "<li>Korrigieren (Das stimmt nicht.)</li>" +
+    "<li>Drohen (Wenn Sie nicht...)</li>" +
+    "<li>Genervt klingen (Das habe ich doch schon gesagt!)</li>" +
+    "<li>Befehlen ohne Kontakt (Setzen Sie sich.)</li></ul></div>" +
+
+    "<details><summary>Alle Antworten nochmal ansehen</summary>" + reviewHtml + "</details>" +
+    "<div class='controls' style='margin-top:16px;'><button class='secondary' type='button' id='btnNeu'>Nochmal ueben</button></div>";
+
   resultEl.style.display = "block";
-  resultEl.scrollIntoView({ behavior:"smooth", block:"start" });
+  resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  document.getElementById("btnNeu").addEventListener("click", () => location.reload());
+  document.getElementById("btnNeu").addEventListener("click", function() {
+    location.reload();
+  });
 });
 
-// Start
 render();
 
-/* =========================
-   QR Code minimal (Button + Modal)
-   ========================= */
-const qrFab      = document.getElementById('qrFab');
-const qrBackdrop = document.getElementById('qrBackdrop');
-const qrClose    = document.getElementById('qrClose');
-const qrCanvas   = document.getElementById('qrCanvas');
+/* QR-Modal-Logik (wie dein Original) */
+var qrFab = document.getElementById('qrFab');
+var qrBackdrop = document.getElementById('qrBackdrop');
+var qrClose = document.getElementById('qrClose');
+var qrCanvas = document.getElementById('qrCanvas');
+var qrMade = false;
 
-let qrMade = false;
-
-function openQR(){
+function openQR() {
   qrBackdrop.style.display = 'flex';
-  if(!qrMade){
-    // Wichtig: Canvas vor erneutem Erzeugen leer lassen
+  if (!qrMade) {
     qrCanvas.innerHTML = '';
     new QRCode(qrCanvas, {
       text: window.location.href,
@@ -648,14 +685,19 @@ function openQR(){
     qrMade = true;
   }
 }
-function closeQR(){
+
+function closeQR() {
   qrBackdrop.style.display = 'none';
 }
 
 qrFab.addEventListener('click', openQR);
 qrClose.addEventListener('click', closeQR);
-qrBackdrop.addEventListener('click', (e)=>{ if(e.target === qrBackdrop) closeQR(); });
-window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeQR(); });
+qrBackdrop.addEventListener('click', function(e) {
+  if (e.target === qrBackdrop) closeQR();
+});
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeQR();
+});
 </script>
 
 </body>
