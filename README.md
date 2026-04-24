@@ -1,5 +1,12 @@
 # Validation-Training
 
+**Sicher reagieren bei Menschen mit Demenz — Sprache und Handlung parallel trainieren**
+
+[![Lizenz: CC BY-NC-SA 4.0](https://img.shields.io/badge/Lizenz-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue)](https://florianloyns.github.io/validation-training/index.html)
+![Keine Abhängigkeiten](https://img.shields.io/badge/Abh%C3%A4ngigkeiten-keine-brightgreen)
+![Ansatz](https://img.shields.io/badge/Ansatz-Feil%20%C2%B7%20Richard%20(IVA)-teal)
+
 Dieses Repository enthält einen interaktiven Selbsttest für Auszubildende in der dreijährigen generalistischen Pflegeausbildung zum Umgang mit Menschen mit Demenz. Der Test trainiert kurze, alltagstaugliche Formulierungen – plus eine passende nonverbale Handlung, damit der Transfer in die Praxis gelingt.
 
 **[Hier klicken, um den Validation-Selbsttest direkt online auszuprobieren!](https://FlorianLoyns.github.io/validation-training/)**
