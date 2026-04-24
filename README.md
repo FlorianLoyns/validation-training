@@ -1,6 +1,6 @@
 # Validation-Training
 
-Dieses Repository enthält einen interaktiven Selbsttest für Pflegefachassistenz-Schüler:innen (PFA) zum Umgang mit Menschen mit Demenz. Der Test trainiert kurze, alltagstaugliche Formulierungen – plus eine passende nonverbale Handlung, damit der Transfer in die Praxis gelingt.
+Dieses Repository enthält einen interaktiven Selbsttest für Auszubildende in der dreijährigen generalistischen Pflegeausbildung zum Umgang mit Menschen mit Demenz. Der Test trainiert kurze, alltagstaugliche Formulierungen – plus eine passende nonverbale Handlung, damit der Transfer in die Praxis gelingt.
 
 **[Hier klicken, um den Validation-Selbsttest direkt online auszuprobieren!](https://FlorianLoyns.github.io/validation-training/)**
 
@@ -17,7 +17,7 @@ Am Ende siehst du eine Gesamtauswertung mit Punkten und Prozent, eine Ampel (Gut
 Das Training orientiert sich an zwei Ansätzen:
 
 - **Validation nach Naomi Feil** – der Ursprungsansatz, der die emotionale Ebene einer Aussage ernst nimmt, statt auf der Sachebene zu korrigieren.
-- **Integrative Validation nach Nicole Richard (IVA)** – die im deutschen Pflegealltag verbreitete Weiterentwicklung, die stärker mit Gefühlen und Antrieben arbeitet und besonders für Pflegefachassistenz-Schüler:innen anschlussfähig ist.
+- **Integrative Validation nach Nicole Richard (IVA)** – die im deutschen Pflegealltag verbreitete Weiterentwicklung, die stärker mit Gefühlen und Antrieben arbeitet und sich gut in die generalistische Pflegeausbildung einfügen lässt.
 
 Der Test ist bewusst als **Übungsimpuls** konzipiert, nicht als Prüfungsinstrument. Er ersetzt keine Anleitung in der Praxis, sondern schafft Formulierungssicherheit für typische Alltagssituationen.
 
