@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#0d7377" />
 
   <link rel="canonical" href="https://florianloyns.github.io/validation-training/">
   <meta name="description" content="Validation im Pflegealltag. Kurze Szenarien, einfache Formulierungen, Handlungsanweisungen, sofortige Auswertung – lokal im Browser.">
@@ -17,7 +17,7 @@
   <style>
     :root{
       --bg:#ffffff; --fg:#000000; --muted:#f7f7f7;
-      --accent:#007bff; --accent-hover:#0056b3;
+      --accent:#0d7377; --accent-hover:#0a5c5f;
       --warn:#ffefef; --border:#000000;
       --ok:#eaffea; --okb:#6bb36b;
       --meh:#fff7e6; --mehb:#d39b2e;
@@ -34,6 +34,7 @@
       position: relative;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      accent-color: var(--accent);
     }
     h1{ margin:0 0 8px 0; }
     .muted{ opacity:.85; }
@@ -95,7 +96,8 @@
       margin-top:40px; padding-top:12px; border-top:1px solid #eee;
       font-size:13px; opacity:.6; text-align:center;
     }
-    footer a{ color:inherit; }
+    footer a{ color:inherit; text-decoration:none; }
+    footer a:hover{ text-decoration:underline; }
 
     @media (max-width:600px){
       body{
